@@ -22,7 +22,7 @@ What did you learn?
 - [Tests](#tests)
 - [Questions](#questions)
 ## Installation
-npm installand installation of mongodb.
+npm install and installation of mongodb.
 ## Usage
 ![workouttracker.jpeg](assets/workouttracker.jpeg?raw=true)
 ## License
