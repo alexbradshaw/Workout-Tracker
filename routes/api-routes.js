@@ -3,7 +3,13 @@ const db = require("../models");
 
 router.get("/api/workouts", (req, res) => {
     db.Workout.find({}, (error, data) => {
-        console.log(data)
+        var totalDur
+        for(var i = 0; i < data.length; i++) {
+            console.log(data[i].exercises[0].duration);
+            totalDur += eval(data[i].exercises[0].duration)
+            console.log(totalDur);
+        }
+        console.log(totalDur);
         if (error) {
             res.send(error);
         } else {
