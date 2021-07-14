@@ -32,9 +32,9 @@ router.put("/api/workouts/:id", async (req, res) => {
 })
 
 router.get("/api/workouts/range", async (req, res) => {
-    const workout = await db.Workout.find({})
+    const workout = await db.Workout.aggregate ([{$addFields: {totalDuration: {$sum: '$exercises.duration',}}}])
     try {
-        res.json(workout);
+        res.json(workout)
     } catch (error) {
         console.error(error);
     }
