@@ -1,21 +1,13 @@
 const router = require("express").Router();
 const db = require("../models");
 
-router.get("/api/workouts", (req, res) => {
-    db.Workout.find({}, (error, data) => {
-        var totalDur
-        for(var i = 0; i < data.length; i++) {
-            console.log(data[i].exercises[0].duration);
-            totalDur += eval(data[i].exercises[0].duration)
-            console.log(totalDur);
-        }
-        console.log(totalDur);
-        if (error) {
-            res.send(error);
-        } else {
-            res.send(data);
-        }
-    }, { sort: { 'created_at': 1 } });
+router.get("/api/workouts", async (req, res) => {
+    const workouts = await db.Workout.aggregate ([{$addFields: {totalDuration: {$sum: '$exercises.duration',}}}])
+    try {
+        res.json(workouts)
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 router.post("/api/workouts", async (req, res) => {
