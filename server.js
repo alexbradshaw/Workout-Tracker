@@ -1,10 +1,13 @@
 const express = require("express");
+const mongoose = require("mongoose");
+const path = require('path');
+const logger = require('morgan');
 const mongojs = require("mongojs");
-const logger = require("morgan");
-const path = require("path");
 
+const PORT = process.env.PORT || 3000;
+
+const db = require("./models")
 const app = express();
-
 app.use(logger("dev"));
 
 app.use(express.urlencoded({ extended: true }));
@@ -12,38 +15,60 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-const databaseUrl = "notetaker";
-const collections = ["notes"];
-
-const db = mongojs(databaseUrl, collections);
-
-db.on("error", error => {
-  console.log("Database Error:", error);
+mongoose.connect(process.env.MONGODB_URI || "mongodb://127.0.0.1/Workout", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false
 });
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname + "./public/index.html"));
+  res.sendFile(path.join(__dirname + "/public/index.html"));
 });
 
-app.post("/submit", (req, res) => {
-  console.log(req.body);
+app.get("/exercise", (req, res) => {
+  res.sendFile(path.join(__dirname + "/public/exercise.html"));
+});
 
-  db.notes.insert(req.body, (error, data) => {
+app.get("/stats", (req, res) => {
+  res.sendFile(path.join(__dirname + "/public/stats.html"));
+});
+
+app.get("/api/workouts", (req, res) => {
+  db.Workout.find({}, (error, data) => {
+    console.log(data)
     if (error) {
       res.send(error);
     } else {
       res.send(data);
     }
-  });
+  }, { sort: { 'created_at': 1 } });
 });
 
+app.post("/api/workouts", async (req, res) => {
+  console.log(req.body);
+  const workout = await db.Workout.create({})
+  try {
+    res.json(workout)
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+app.put("/api/workouts/:id", async (req, res) => {
+  const doc = await db.Workout.findOneAndUpdate({id: req.params.id}, req.body, {
+    returnOriginal: false
+  });
+  try {
+    res.json(doc)
+  } catch (error) {
+    console.error(error);
+  }
+})
+
 app.get("/all", (req, res) => {
-  db.notes.find({}, (error, data) => {
-    if (error) {
-      res.send(error);
-    } else {
-      res.json(data);
-    }
+  workout.findOne({}, {}, { sort: { 'created_at': -1 } }, function (err, post) {
+    console.log(post);
   });
 });
 
@@ -109,6 +134,6 @@ app.delete("/clearall", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("App running on port 3000!");
+app.listen(PORT, () => {
+  console.log(`App running on port ${PORT}!`);
 });
