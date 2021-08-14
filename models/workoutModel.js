@@ -10,44 +10,38 @@ const workoutSchema = new Schema({
   },
 
   exercises: [{
-    workoutType: {
+    type: {
       type: String,
       trim: true,
     },
 
-    nameInput: {
+    name: {
       type: String,
       trim: true,
     },
 
     duration: {
       type: Number,
-      trim: true,
     },
 
-    weightInput: {
+    weight: {
       type: Number,
-      trim: true,
     },
 
-    setsInput: {
+    sets: {
       type: Number,
-      trim: true,
     },
 
-    repsInput: {
+    reps: {
       type: Number,
-      trim: true,
     },
 
-    distanceInput: {
+    distance: {
       type: Number,
-      trim: true,
     },
 
     totalDuration: {
       type: Number,
-      trim: true,
     }
   }
   ]
